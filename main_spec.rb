@@ -1,5 +1,4 @@
 require_relative 'main'
-require 'byebug'
 
 # reopen class to simulate db objects
 class Folder < OpenStruct

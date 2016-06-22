@@ -15,12 +15,12 @@ class Folder < OpenStruct
   end
 
   # recursive call instance method
-  def all_children(starting_folder=self, accummulator=[])
+  def all_children(accummulator=[])
     return accummulator if children.size == 0
     children.each do |child_id|
       child = Folder.get(child_id)
       accummulator << child
-      child.all_children(starting_folder, accummulator)
+      child.all_children(accummulator)
     end
     accummulator
   end
