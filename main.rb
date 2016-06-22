@@ -1,7 +1,36 @@
 require 'ostruct'
 
+# simulate the db
+class DB
+  def self.bucket
+    @db ||= [
+      Folder.new({id: 'a', children: %w(b c d e), items: []}),
+      Folder.new({id: 'b', children: %w(f g h), items: []}),
+      Folder.new({id: 'c', children: [], items: %w(j)}),
+      Folder.new({id: 'd', children: [], items: []}),
+      Folder.new({id: 'e', children: [], items: []}),
+      Folder.new({id: 'f', children: [], items: []}),
+      Folder.new({id: 'g', children: [], items: []}),
+      Folder.new({id: 'h', children: %w(i), items: %w(k l)}),
+      Folder.new({id: 'i', children: [], items: []}),
+      Item.new({id: 'j'}),
+      Item.new({id: 'k'}),
+      Item.new({id: 'l'}),
+    ]
+  end
+
+  # simulate the finding of a record
+  def self.get(id)
+    bucket.find { |element| element.id == id }
+  end
+end
+
 # class to simulate our folder
 class Folder < OpenStruct
+  # quick and dirty get
+  def self.get(id)
+    DB.get(id)
+  end
 
   # recursive call, class method
   def self.all_children(folder, accummulator=[])
@@ -38,8 +67,9 @@ end
 
 # the class to simulate an item
 class Item < OpenStruct
+  # quick and dirty get
   def self.get(id)
-    Folder.get(id)
+    DB.get(id)
   end
 end
 

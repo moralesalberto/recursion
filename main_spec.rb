@@ -1,38 +1,11 @@
 require_relative 'main'
 
-# reopen class to simulate db objects
-class Folder < OpenStruct
-  # the container for tests
-  def self.db
-    @db ||= [
-      Folder.new({id: 'a', children: %w(b c d e), items: []}),
-      Folder.new({id: 'b', children: %w(f g h), items: []}),
-      Folder.new({id: 'c', children: [], items: %w(j)}),
-      Folder.new({id: 'd', children: [], items: []}),
-      Folder.new({id: 'e', children: [], items: []}),
-      Folder.new({id: 'f', children: [], items: []}),
-      Folder.new({id: 'g', children: [], items: []}),
-      Folder.new({id: 'h', children: %w(i), items: %w(k l)}),
-      Folder.new({id: 'i', children: [], items: []}),
-      Item.new({id: 'j'}),
-      Item.new({id: 'k'}),
-      Item.new({id: 'l'}),
-    ]
-  end
-
-  # simulate the finding of a record
-  def self.get(id)
-    db.find { |folder| folder.id == id }
-  end
-end
-
-
 describe 'get' do
   let(:folder) { Folder.get('a') }
 
   it 'should find a folder by id' do
-    expect(Folder.get('a')).not_to be_nil
-    expect(Folder.get('a').id).to eq('a')
+    expect(DB.get('a')).not_to be_nil
+    expect(DB.get('a').id).to eq('a')
   end
 
   it 'should find all children via class method' do
