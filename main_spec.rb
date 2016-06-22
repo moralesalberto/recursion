@@ -50,5 +50,14 @@ describe 'get' do
     expect(all.size).to eq(8)
     expect(folder.all_children.map(&:id).sort).to eq(%w(b c d e f g h i))
   end
+
+  it 'should be fine with no children, (not blow up)' do
+    folder = Folder.get('i')
+    all = []
+    folder.each_child do |child|
+      all << child
+    end
+    expect(all.size).to eq(0)
+  end
 end
 
