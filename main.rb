@@ -24,4 +24,17 @@ class Folder < OpenStruct
     end
     accummulator
   end
+
+  # using enumerable
+  include Enumerable
+  def each(&block)
+    children.each do |child_id|
+      child = Folder.get(child_id)
+      yield child
+      child.each(&block)
+    end
+  end
+  # probably better called each child
+  alias each_child each
+
 end

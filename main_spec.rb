@@ -40,5 +40,15 @@ describe 'get' do
     expect(folder.all_children.size).to eq(8)
     expect(folder.all_children.map(&:id).sort).to eq(%w(b c d e f g h i))
   end
+
+  it 'should find all children via each method' do
+    folder = Folder.get('a')
+    all = []
+    folder.each_child do |child|
+      all << child
+    end
+    expect(all.size).to eq(8)
+    expect(folder.all_children.map(&:id).sort).to eq(%w(b c d e f g h i))
+  end
 end
 
