@@ -1,40 +1,86 @@
 require 'ostruct'
 
+# simulate db objects
+class DB
+  # the container for tests
+  def self.bucket
+    @db ||= [
+      Folder.new({id: 'a', children: %w(b c d e)}),
+      Folder.new({id: 'b', children: %w(f g h), items: %w(m n)}),
+      Folder.new({id: 'c', children: [], items: %w(j k l)}),
+      Folder.new({id: 'd', children: []}),
+      Folder.new({id: 'e', children: []}),
+      Folder.new({id: 'f', children: []}),
+      Folder.new({id: 'g', children: []}),
+      Folder.new({id: 'h', children: %w(i)}),
+      Folder.new({id: 'i', children: []}),
+      Item.new({id: 'j'}),
+      Item.new({id: 'k'}),
+      Item.new({id: 'l'}),
+      Item.new({id: 'm'}),
+      Item.new({id: 'n'})
+    ]
+  end
+end
+
 # class to simulate our folder
 class Folder < OpenStruct
 
-  # recursive call, class method
-  def self.all_children(folder, accummulator=[])
-    return accummulator if folder.children.size == 0
-    folder.children.each do |child_id|
-      child = Folder.get(child_id)
-      accummulator << child
-      self.all_children(child, accummulator)
-    end
-    accummulator
+  def all_child_folders
+    AllChildFolders.new(self)
   end
 
-  # recursive call instance method
-  def all_children(accummulator=[])
-    return accummulator if children.size == 0
-    children.each do |child_id|
-      child = Folder.get(child_id)
-      accummulator << child
-      child.all_children(accummulator)
-    end
-    accummulator
+  def all_items
+    AllItems.new(self)
   end
 
-  # using enumerable
+  def self.get(id)
+    DB.bucket.find { |f| f.id == id }
+  end
+end
+
+# simulate the item class
+class Item < OpenStruct
+  def self.get(id)
+    DB.bucket.find { |f| f.id == id }
+  end
+end
+
+# the base class for the walker
+class Walker
+  attr_reader :source # folder or item instance
   include Enumerable
+
+  def initialize(source)
+    @source = source
+  end
+
+  # the iterator
   def each(&block)
     children.each do |child_id|
-      child = Folder.get(child_id)
+      child = klass.get(child_id)
       yield child
       child.each(&block)
     end
   end
-  # probably better called each child
-  alias each_child each
+end
 
+class AllChildFolders < Walker
+  def klass
+    Folder
+  end
+
+  def children
+    source.children
+  end
+end
+
+class AllItems < Walker
+  def klass
+    Item
+  end
+
+  def children
+    source.items
+  end
 end
